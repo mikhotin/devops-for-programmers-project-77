@@ -1,0 +1,6 @@
+
+pass.txt
+*secrets.auto.tfvars
+*.tfstate
+*.tfstate.*
+*.backup

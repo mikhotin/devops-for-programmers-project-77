@@ -1,0 +1,54 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Install aptitude
+      ansible.builtin.apt:
+        name: aptitude
+        state: present
+        update_cache: true
+
+    - name: Install required system packages
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: present
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      ansible.builtin.pip:
+        name: docker
+
+    - name: Copy docker-compose.yml
+      ansible.builtin.template:
+        src: templates/docker-compose.yml.j2
+        dest: /etc/docker-compose.yml
+      tags: deploy
+
+    - name: Run Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: /etc
+        state: present
+      tags: deploy
+
+- hosts: servers
+  tasks:
+    - name: Import the Datadog Agent role from the Datadog collection
+      import_role:
+        name: datadog.dd.agent
+      tags: datadog
+
+    - name: http check
+      ansible.builtin.template:
+        src: templates/http_check.j2
+        dest: /etc/datadog-agent/conf.d/http_check.d/conf.yaml
+      tags: datadog
+  vars:
+    datadog_api_key: {{ DATADOG_API_KEY_VAULT }}
+    datadog_site: "datadoghq.eu"
+
