@@ -19,10 +19,12 @@
           - python3-setuptools
         state: present
         update_cache: true
+      tags: deploy
 
     - name: Install Docker Module for Python
       ansible.builtin.pip:
         name: docker
+      tags: deploy
 
     - name: Copy docker-compose.yml
       ansible.builtin.template:
@@ -49,6 +51,6 @@
         dest: /etc/datadog-agent/conf.d/http_check.d/conf.yaml
       tags: datadog
   vars:
-    datadog_api_key: {{ DATADOG_API_KEY_VAULT }}
+    datadog_api_key: "{{ DATADOG_API_KEY_VAULT }}"
     datadog_site: "datadoghq.eu"
 
