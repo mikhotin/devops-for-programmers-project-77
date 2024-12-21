@@ -1,5 +1,8 @@
 - hosts: all
   become: true
+  vars:
+    datadog_api_key: "{{ DATADOG_API_KEY_VAULT }}"
+    datadog_site: "datadoghq.eu"
   tasks:
     - name: Install aptitude
       ansible.builtin.apt:
@@ -8,7 +11,7 @@
         update_cache: true
 
     - name: Install required system packages
-      ansible.builtin.apt:
+      apt:
         pkg:
           - apt-transport-https
           - ca-certificates
@@ -17,40 +20,40 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
-        state: present
+        state: latest
         update_cache: true
-      tags: deploy
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
 
     - name: Install Docker Module for Python
-      ansible.builtin.pip:
+      pip:
         name: docker
-      tags: deploy
 
     - name: Copy docker-compose.yml
       ansible.builtin.template:
         src: templates/docker-compose.yml.j2
         dest: /etc/docker-compose.yml
-      tags: deploy
 
     - name: Run Docker Compose
       community.docker.docker_compose_v2:
         project_src: /etc
         state: present
-      tags: deploy
 
-- hosts: servers
-  tasks:
     - name: Import the Datadog Agent role from the Datadog collection
       import_role:
         name: datadog.dd.agent
       tags: datadog
-
-    - name: http check
-      ansible.builtin.template:
-        src: templates/http_check.j2
-        dest: /etc/datadog-agent/conf.d/http_check.d/conf.yaml
-      tags: datadog
-  vars:
-    datadog_api_key: "{{ DATADOG_API_KEY_VAULT }}"
-    datadog_site: "datadoghq.eu"
-
