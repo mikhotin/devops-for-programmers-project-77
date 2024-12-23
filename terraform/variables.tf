@@ -26,3 +26,11 @@ variable "datadog_app_key" {
   type        = string
   sensitive   = true
 }
+
+variable "ssh" {
+  description = "SSH key"
+  type        = string
+  sensitive   = true
+}
+
+
