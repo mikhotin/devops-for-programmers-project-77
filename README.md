@@ -13,9 +13,17 @@
 * ansible
 * make
 
+Домен: https://mikhotin.ru
 
-### Prepare secrets
+### Setup infrastructure
+```
+cd terraform
+make init
+make apply
+```
+
+### Install packages
 ```
 cd ansible
-make secrets
+make deploy
 ```

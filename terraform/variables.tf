@@ -15,22 +15,6 @@ variable "yc_folder_id" {
   sensitive   = true
 }
 
-variable "db_name" {
-  description = "Database name"
-  type        = string
-}
-
-variable "db_user" {
-  description = "Database user"
-  type        = string
-}
-
-variable "db_password" {
-  description = "Database password"
-  type        = string
-  sensitive   = true
-}
-
 variable "datadog_api_key" {
   description = "Datadog API key"
   type        = string
@@ -42,11 +26,3 @@ variable "datadog_app_key" {
   type        = string
   sensitive   = true
 }
-
-variable "ssh" {
-  description = "SSH key"
-  type        = string
-  sensitive   = true
-}
-
-
