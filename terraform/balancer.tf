@@ -15,6 +15,7 @@ resource "yandex_alb_load_balancer" "app-balancer" {
     endpoint {
       address {
         external_ipv4_address {
+
         }
       }
       ports = [3000]
